@@ -17,6 +17,7 @@
 
 /* Facts */
 
+/** Market information **/
 market(etr).
 market(ebr).
 market(ams).
@@ -24,19 +25,40 @@ market(ams).
 has_low_tax(ebr).
 has_low_tax(ams).
 
+/** Stocks **/
+/*** etr ***/
 stock(fme).
+/*** ebr ***/
 stock(cofb).
 stock(tess).
 stock(tnet).
+stock(exm).
+/*** ams ***/
 stock(sbm).
+
+/*** etr ***/
 market_of_stock(fme, etr).
+/*** ebr ***/
 market_of_stock(cofb, ebr).
 market_of_stock(tess, ebr).
 market_of_stock(tnet, ebr).
+market_of_stock(exm, ebr).
+/*** ams ***/
 market_of_stock(sbm, ams).
 
-fund(ebr, tst).
+stock_10y_low(fme, 1).
+stock_10y_low(cofb, 1).
+stock_10y_low(tess, 1).
+stock_10y_low(tnet, 1).
+stock_10y_low(sbm, 1).
+stock_10y_high(fme, 10).
+stock_10y_high(cofb, 10).
+stock_10y_high(tess, 10).
+stock_10y_high(tnet, 10).
+stock_10y_high(sbm, 10).
 
+/** Funds **/
+/*fund(ebr, tst).*/
 
 /* Predicates */
 
