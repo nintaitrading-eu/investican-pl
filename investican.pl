@@ -67,9 +67,14 @@ has_potential(Market, Stock) :-
   market_of_stock(Stock, Market),
   has_low_tax(Market).
 
-find_all_for_market(Market) :-
+find_all(Market) :-
+  forall(Market, write_all(Market)). 
+
+write_all(Market) :-
+  open('result.txt', write, Stream),
   setof(X, (has_potential(Market, X)), X0),
-  nl,
-  write(Market),
-  write('.'),
-  write(X0), nl.
+  write(Stream, Market),
+  write(Stream, '.'),
+  write(Stream, X0),
+  write(Stream, nl),
+  close(Stream).
