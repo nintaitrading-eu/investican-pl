@@ -60,8 +60,12 @@ has_potential(Code, Market) :-
   stock(Code, Market),
   has_low_tax(Market).
 
-find_all(Market) :-
-  open('result.txt', write, Stream),
-  setof(X, (has_potential(X, Market)), X0), 
-  forall(member(X, X0), write(Stream, X)),
-  close(Stream).
+find_all :-
+  has_potential(X, Y),
+  write(Y), write('.'), write(X), nl.
+  %open('result.txt', write, Stream),
+  %setof(X, (has_potential(X, _)), X0), 
+  %write(X0), nl,
+  %write(Stream, X0),
+  %forall(member(X, X0), ),
+  %close(Stream).
