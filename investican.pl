@@ -1,3 +1,4 @@
+#!/usr/local/bin/swipl
 %
 % Investican.pl:
 % Check commodities, to see if they can be possible investment candidates,
@@ -16,14 +17,20 @@
 */
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Imports
+% Import modules
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- use_module(library(csv)).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Init 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- set_prolog_flag(verbose, silent).
+:- initialization main.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Facts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Loaded from csv-files
 
 %%% Market information
 % TODO: move to csv file.
@@ -56,7 +63,7 @@ has_potential(Code, Market) :-
   stock(Code, Market),
   market(Market, 'low_tax').
 
-candidates :-
+main :-
   import_facts,
   setof(Y-X, (has_potential(X, Y)), X0),
   open('result.txt', write, Stream),
