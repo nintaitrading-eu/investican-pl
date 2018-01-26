@@ -16,29 +16,17 @@
 */
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Imports
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+:- use_module(library(csv)).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Facts
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Market information
-market(etr).
-market(ebr).
-market(ams).
-
-has_low_tax(ebr).
-has_low_tax(ams).
-
-%%% Stocks
-% etr
-stock(fme, etr).
-%% ebr
-stock(cofb, ebr).
-stock(tess, ebr).
-stock(tnet, ebr).
-stock(exm, ebr).
-% ams
-stock(sbm, ams).
-
-stock_10y_low(fme, 1).
+% TODO: move to csv file.
 stock_10y_low(cofb, 1).
 stock_10y_low(tess, 1).
 stock_10y_low(tnet, 1).
@@ -49,18 +37,27 @@ stock_10y_high(tess, 10).
 stock_10y_high(tnet, 10).
 stock_10y_high(sbm, 10).
 
-%%% Funds
-%fund(ebr, tst).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Predicates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+import_facts :-
+  % stocks
+  write('Loading stocks from stocks.csv...'), nl,
+  csv_read_file('stocks.csv', Stocks, [functor(stock), separator(0';)]),
+  maplist(writeln, Stocks),
+  maplist(assert, Stocks),
+  % markets 
+  write('Loading markets from markets.csv...'), nl,
+  csv_read_file('markets.csv', Markets, [functor(market), separator(0';)]),
+  maplist(writeln, Markets),
+  maplist(assert, Markets).
 
 has_potential(Code, Market) :-
   stock(Code, Market),
-  has_low_tax(Market).
+  market(Market, 'low_tax').
 
 candidates :-
+  import_facts,
   setof(Y-X, (has_potential(X, Y)), X0),
   open('result.txt', write, Stream),
   %write(X0), nl.
