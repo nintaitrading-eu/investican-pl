@@ -70,7 +70,7 @@ has_potential(Code, Market) :-
 main :-
   import_facts,
   %dash_to_dots('market-stock', ConvertedAtom),
-  setof({market:Y, commodity:X}, (has_potential(X, Y)), X0),
+  setof({"\"market\"": Y, "\"commodity\"": X}, (has_potential(X, Y)), X0),
   open('result.txt', write, Stream),
   %write(X0), nl.
   write(Stream, X0),
