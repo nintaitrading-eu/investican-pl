@@ -49,12 +49,12 @@ stock_10y_high(sbm, 10).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import_facts :-
   % stocks
-  write('Loading stocks from stocks.csv...'), nl,
+  write("Loading stocks from stocks.csv..."), nl,
   csv_read_file('stocks.csv', Stocks, [functor(stock), separator(0';)]),
   maplist(writeln, Stocks),
   maplist(assert, Stocks),
   % markets 
-  write('Loading markets from markets.csv...'), nl,
+  write("Loading markets from markets.csv..."), nl,
   csv_read_file('markets.csv', Markets, [functor(market), separator(0';)]),
   maplist(writeln, Markets),
   maplist(assert, Markets).
@@ -63,9 +63,14 @@ has_potential(Code, Market) :-
   stock(Code, Market),
   market(Market, 'low_tax').
 
+%dash_to_dots(AnElement, ConvertedAtom) :-
+%  atomic_list_concat(Words, '-', AnElement),
+%  atomic_list_concat(Words, '.', ConvertedAtom).
+
 main :-
   import_facts,
-  setof(Y-X, (has_potential(X, Y)), X0),
+  %dash_to_dots('market-stock', ConvertedAtom),
+  setof({market:Y, commodity:X}, (has_potential(X, Y)), X0),
   open('result.txt', write, Stream),
   %write(X0), nl.
   write(Stream, X0),
