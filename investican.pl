@@ -64,24 +64,32 @@ has_potential(Code, Market) :-
   stock(Code, Market),
   market(Market, 'low_tax').
 
-convert_to_json(Market, Code, Result) :-
-  Result is format("{\"market\": \"~w\",\"commodity\": \"~w\"}", [Market, Code]).
+%convert_to_json(Market, Code, Result) :-
+%  Result is format("{\"market\": \"~w\",\"commodity\": \"~w\"}", [Market, Code]).
 
 %dash_to_dots(AnElement, ConvertedAtom) :-
 %  atomic_list_concat(Words, '-', AnElement),
 %  atomic_list_concat(Words, '.', ConvertedAtom).
 
 %make a list that changes
-%test([], NewList).
-test([A, B|T], NewList) :-
-  write('test: A='), write(A), nl,
-  write('test: B='), write(B), nl,
+test([], _).
+test([H|T], NewList) :-
+  write('====================='), nl,
+  write('test: NewList='), write(NewList), nl,
+  write('test: H='), write(H), nl,
   write('test: T='), write(T), nl,
-  % TODO: Arguments not sufficiently instantiated.
-  % TODO: Finish function and extend it to make [A,B] jsonified.
-  append([{"lala":A, "lblb":B}], NewList),
-  write('test: NewList after append='), write(NewList), nl.
-  %test(T, NewList).
+  nth0(0, H, ElemMarket),
+  nth0(1, H, ElemCode),
+  format(atom(ElemHeadJson), '{\"market\": \"~w\", \"commodity\": \"~w\"}', [ElemMarket, ElemCode]),
+  (var(NewList) -> write('empty'); write('not empty')), nl, % if NewList is NOT instantiated, add to empty list
+  %append(NewList, [], TmpList), % Warning: This gives an infinite loop!
+  append([], NewList, TmpList),
+  write('test: ElemHeadJson='), write(ElemHeadJson), nl,
+  write('test: TmpList='), write(TmpList), nl,
+  (var(NewList) -> append([ElemHeadJson], [], NewList); append([ElemHeadJson], [TmpList], NewList)),
+  write('test: ElemHeadJson='), write(ElemHeadJson), nl,
+  write('test: NewList after append='), write(NewList), nl,
+  test(T, NewList).
 
 main :-
   import_facts,
