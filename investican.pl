@@ -20,12 +20,16 @@
 % Import modules
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- use_module(library(csv)).
+:- use_module(library(http/json)).
+:- use_module(library(http/json_convert)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Init
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 :- set_prolog_flag(verbose, silent).
 :- initialization main.
+
+:- json_object commodity(market:string, code:string).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Facts
@@ -72,7 +76,7 @@ has_potential(Code, Market) :-
 %  atomic_list_concat(Words, '.', ConvertedAtom).
 
 %make a list that changes
-test([], _).
+%test([], _).
 test([H|T], NewList) :-
   write('====================='), nl,
   write('test: NewList='), write(NewList), nl,
@@ -80,29 +84,23 @@ test([H|T], NewList) :-
   write('test: T='), write(T), nl,
   nth0(0, H, ElemMarket),
   nth0(1, H, ElemCode),
-  format(atom(ElemHeadJson), '{\"market\": \"~w\", \"commodity\": \"~w\"}', [ElemMarket, ElemCode]),
+  prolog_to_json(json([market=ElemMarket, code=ElemCode]), ElemHeadJson),
   (var(NewList) -> write('empty'); write('not empty')), nl, % if NewList is NOT instantiated, add to empty list
-  %append(NewList, [], TmpList), % Warning: This gives an infinite loop!
   append([], NewList, TmpList),
   write('test: ElemHeadJson='), write(ElemHeadJson), nl,
   write('test: TmpList='), write(TmpList), nl,
-  (var(NewList) -> append([ElemHeadJson], [], NewList); append([ElemHeadJson], [TmpList], NewList)),
+  (var(NewList) -> append([ElemHeadJson], [], NewList); append([ElemHeadJson], TmpList, NewList)),
   write('test: ElemHeadJson='), write(ElemHeadJson), nl,
   write('test: NewList after append='), write(NewList), nl,
   test(T, NewList).
 
 main :-
   import_facts,
-  %dash_to_dots('market-stock', ConvertedAtom),
-  % TODO: The call to convert... does not work. It gets added to the txt file.
-  %convert_to_json(X, Y, R),
   setof([Y, X], (has_potential(X, Y)), X0),
-  % TODO: make Choco be:
-  % [{"market": "Y0", "code": "X0"}, ...]
   test(X0, Choco),
   write(Choco), nl,
-  %write(X0), nl,
-  %open('result.txt', write, Stream),
-  %write(Stream, R),
-  %close(Stream),
+  json_write(current_output, Choco),
+  open('result.txt', write, Stream),
+  json_write(Stream, Choco),
+  close(Stream),
   write('Done.'), nl.
