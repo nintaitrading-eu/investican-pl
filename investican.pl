@@ -85,19 +85,20 @@ test([H|T], NewList) :-
   nth0(0, H, ElemMarket),
   nth0(1, H, ElemCode),
   prolog_to_json(json([market=ElemMarket, code=ElemCode]), ElemHeadJson),
-  (var(NewList) -> write('empty'); write('not empty')), nl, % if NewList is NOT instantiated, add to empty list
   append([], NewList, TmpList),
   write('test: ElemHeadJson='), write(ElemHeadJson), nl,
   write('test: TmpList='), write(TmpList), nl,
-  (var(NewList) -> append([ElemHeadJson], [], NewList); append([ElemHeadJson], TmpList, NewList)),
-  write('test: ElemHeadJson='), write(ElemHeadJson), nl,
-  write('test: NewList after append='), write(NewList), nl,
-  test(T, NewList).
+  (var(NewList) -> write('empty'); write('not empty')), nl, % if NewList is NOT instantiated, add to empty list
+  (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
+  write('test: X after append='), write(X), nl,
+  test(T, X).
 
 main :-
   import_facts,
   setof([Y, X], (has_potential(X, Y)), X0),
   test(X0, Choco),
+  % TODO: make a base case work, I don't think it properly exits test.
+  write('test: after test call'), nl,
   write(Choco), nl,
   json_write(current_output, Choco),
   open('result.txt', write, Stream),
