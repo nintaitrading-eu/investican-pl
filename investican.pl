@@ -76,9 +76,11 @@ has_potential(Code, Market) :-
 %  atomic_list_concat(Words, '.', ConvertedAtom).
 
 %make a list that changes
-test([], _).
+test([], NewList) :-
+  write('[bc] test: base case emptly list'), nl,
+  write(NewList), nl.
 
-test([H], _) :-
+test([H], NewList) :-
   write('[bc] test: base case list 1 element'), nl,
   nth0(0, H, ElemMarket),
   nth0(1, H, ElemCode),
@@ -95,13 +97,21 @@ test([H|T], NewList) :-
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
   test(T, X).
 
+test_assignment(A, X) :-
+  append([A], [], X),
+  write(X), nl.
+
 main :-
   import_facts,
+  test_assignment('kak', R0),
+  write('test_assignment = '), write(R0), nl,
   setof([Y, X], (has_potential(X, Y)), X0),
+  write(X0), nl,
   test(X0, Choco),
+  append([], Choco, R),
   % TODO: make a base case work, I don't think it properly exits test.
   write('test: after test call'), nl,
-  write(Choco), nl,
+  write(R), nl,
   %json_write(current_output, Choco),
   %open('result.txt', write, Stream),
   %json_write(Stream, Choco),
