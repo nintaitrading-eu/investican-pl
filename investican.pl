@@ -76,22 +76,23 @@ has_potential(Code, Market) :-
 %  atomic_list_concat(Words, '.', ConvertedAtom).
 
 %make a list that changes
+element_to_json(ListElement, Result) :-
+  nth0(0, ListElement, ElemMarket),
+  nth0(1, ListElement, ElemCode),
+  prolog_to_json(json([market=ElemMarket, code=ElemCode]), Result).
+
 elements_to_json([], NewList) :-
   write('test base case emptly list: '), write(NewList), nl.
 
 elements_to_json([H], NewList) :-
   write('test base case list 1 element.'), nl,
-  nth0(0, H, ElemMarket),
-  nth0(1, H, ElemCode),
-  prolog_to_json(json([market=ElemMarket, code=ElemCode]), ElemHeadJson),
+  element_to_json(H, ElemHeadJson),
   append([], NewList, TmpList),
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
   elements_to_json([], X).
 
 elements_to_json([H|T], NewList) :-
-  nth0(0, H, ElemMarket),
-  nth0(1, H, ElemCode),
-  prolog_to_json(json([market=ElemMarket, code=ElemCode]), ElemHeadJson),
+  element_to_json(H, ElemHeadJson),
   append([], NewList, TmpList),
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
   elements_to_json(T, X).
