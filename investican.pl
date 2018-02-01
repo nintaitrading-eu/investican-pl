@@ -76,42 +76,43 @@ has_potential(Code, Market) :-
 %  atomic_list_concat(Words, '.', ConvertedAtom).
 
 %make a list that changes
-test([], NewList) :-
-  write('[bc] test: base case emptly list'), nl,
-  write(NewList), nl.
+elements_to_json([], NewList) :-
+  write('test base case emptly list: '), write(NewList), nl.
 
-test([H], NewList) :-
-  write('[bc] test: base case list 1 element'), nl,
+elements_to_json([H], NewList) :-
+  write('test base case list 1 element.'), nl,
   nth0(0, H, ElemMarket),
   nth0(1, H, ElemCode),
   prolog_to_json(json([market=ElemMarket, code=ElemCode]), ElemHeadJson),
   append([], NewList, TmpList),
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
-  test([], X).
+  elements_to_json([], X).
 
-test([H|T], NewList) :-
+elements_to_json([H|T], NewList) :-
   nth0(0, H, ElemMarket),
   nth0(1, H, ElemCode),
   prolog_to_json(json([market=ElemMarket, code=ElemCode]), ElemHeadJson),
   append([], NewList, TmpList),
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
-  test(T, X).
+  elements_to_json(T, X).
 
-test_assignment(A, X) :-
-  append([A], [], X),
+test_assignment(A, B, X) :-
+  test_assignment(B, X).
+
+test_assignment(B, X) :-
+  append([B], [], X),
   write(X), nl.
 
 main :-
   import_facts,
-  test_assignment('kak', R0),
-  write('test_assignment = '), write(R0), nl,
+  test_assignment([['kak']], [['bee']], R0),
+  write('test* R0: '), write(R0), nl,
   setof([Y, X], (has_potential(X, Y)), X0),
-  write(X0), nl,
-  test(X0, Choco),
-  append([], Choco, R),
+  write('test X0: '), write(X0), nl,
+  elements_to_json(X0, Choco),
   % TODO: make a base case work, I don't think it properly exits test.
   write('test: after test call'), nl,
-  write(R), nl,
+  write('test Choco: '), write(Choco), nl,
   %json_write(current_output, Choco),
   %open('result.txt', write, Stream),
   %json_write(Stream, Choco),
