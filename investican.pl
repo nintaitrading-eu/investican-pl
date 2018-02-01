@@ -106,7 +106,7 @@ elements_to_json([H|T], NewList) :-
   element_to_json(H, ElemHeadJson),
   append([], NewList, TmpList),
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
-  elements_to_json(T, X).
+  elements_to_json([T], X).
 
 test_assignment([A], [B], X) :-
   test_assignment([B], X).
