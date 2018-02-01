@@ -108,18 +108,18 @@ elements_to_json([H|T], NewList) :-
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
   elements_to_json(T, X).
 
-test_assignment(A, B, X) :-
-  test_assignment(B, X).
+test_assignment([A], [B], X) :-
+  test_assignment([B], X).
 
-test_assignment(B, X) :-
-  append([B], [], X),
+test_assignment([B], X) :-
+  append(B, [], X),
   write(X), nl.
 
 %% main
 % Main predicate of the application.
 main :-
   import_facts,
-  test_assignment([['kak']], [['bee']], R0),
+  test_assignment([[kak]], [[bee]], R0),
   write('test* R0: '), write(R0), nl,
   setof([Y, X], (has_potential(X, Y)), X0),
   write('test X0: '), write(X0), nl,
