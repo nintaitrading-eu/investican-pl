@@ -52,6 +52,8 @@ stock_10y_high(sbm, 10).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Predicates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% import_facts
+% Imports facts from csv-files.
 import_facts :-
   % stocks
   write("Loading stocks from stocks.csv..."), nl,
@@ -64,26 +66,30 @@ import_facts :-
   maplist(writeln, Markets),
   maplist(assert, Markets).
 
+%% has_potential(+Code, +Market)
+% Checks if a commodity has potential, based on a set of criteria.
+% Example: [tess, ebr] will give json([market=ebr,code=tess]) 
 has_potential(Code, Market) :-
   stock(Code, Market),
   market(Market, 'low_tax').
 
-%convert_to_json(Market, Code, Result) :-
-%  Result is format("{\"market\": \"~w\",\"commodity\": \"~w\"}", [Market, Code]).
-
-%dash_to_dots(AnElement, ConvertedAtom) :-
-%  atomic_list_concat(Words, '-', AnElement),
-%  atomic_list_concat(Words, '.', ConvertedAtom).
-
-%make a list that changes
+%% element_to_json(+Atom_List, ?Result)
+% Converts an element of a list to a json object.
+% Example: [tess, ebr] will give json([market=ebr,code=tess]) 
 element_to_json(ListElement, Result) :-
   nth0(0, ListElement, ElemMarket),
   nth0(1, ListElement, ElemCode),
   prolog_to_json(json([market=ElemMarket, code=ElemCode]), Result).
 
+%% elements_to_json(+Empty_List, ?NewList)
+% Base case for converting elements of a list, to json-objects.
+% Deals with an empty list as input.
 elements_to_json([], NewList) :-
   write('test base case emptly list: '), write(NewList), nl.
 
+%% elements_to_json(+ListWith1Element, ?NewList)
+% Base case for converting elements of a list, to json-objects.
+% Deals with a list with just 1 element as input.
 elements_to_json([H], NewList) :-
   write('test base case list 1 element.'), nl,
   element_to_json(H, ElemHeadJson),
@@ -91,6 +97,11 @@ elements_to_json([H], NewList) :-
   (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
   elements_to_json([], X).
 
+%% elements_to_json(+ListWithAtomPairListElements, ?NewList)
+% Converts the elements of a list of atom-pair lists, to json-objects.
+% E.g.: [[tess, ebr],[sbm, ams]]
+% will result in NewList being
+% [json(market=ebr,code=tess),json(market=ams,code=sbm)]
 elements_to_json([H|T], NewList) :-
   element_to_json(H, ElemHeadJson),
   append([], NewList, TmpList),
@@ -104,6 +115,8 @@ test_assignment(B, X) :-
   append([B], [], X),
   write(X), nl.
 
+%% main
+% Main predicate of the application.
 main :-
   import_facts,
   test_assignment([['kak']], [['bee']], R0),
