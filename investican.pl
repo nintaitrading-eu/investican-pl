@@ -68,14 +68,14 @@ import_facts :-
 
 %% has_potential(+Code, +Market)
 % Checks if a commodity has potential, based on a set of criteria.
-% Example: [tess, ebr] will give json([market=ebr,code=tess]) 
+% Example: [tess, ebr] will give json([market=ebr,code=tess])
 has_potential(Code, Market) :-
   stock(Code, Market),
   market(Market, 'low_tax').
 
 %% element_to_json(+Atom_List, ?Result)
 % Converts an element of a list to a json object.
-% Example: [tess, ebr] will give json([market=ebr,code=tess]) 
+% Example: [tess, ebr] will give json([market=ebr,code=tess])
 element_to_json(ListElement, Result) :-
   nth0(0, ListElement, ElemMarket),
   nth0(1, ListElement, ElemCode),
@@ -124,7 +124,7 @@ main :-
   setof([Y, X], (has_potential(X, Y)), X0),
   write('test X0: '), write(X0), nl,
   elements_to_json(X0, Choco),
-  % TODO: make a base case work, I don't think it properly exits test.
+  % TODO: make a base case work, I do not think it properly exits test.
   write('test: after test call'), nl,
   write('test Choco: '), write(Choco), nl,
   %json_write(current_output, Choco),
