@@ -85,7 +85,6 @@ element_to_json(ListElement, Result) :-
 % Base case for converting elements of a list, to json-objects.
 % Deals with an empty list as input.
 elements_to_json_internal([], CurrentResult, FinalResult) :-
-  write('DEBUG: '), write(CurrentResult), nl,
   FinalResult = CurrentResult.
 
 %% elements_to_json_internal(+ListWith1Element, +CurrentResult, ?FinalResult)
@@ -93,10 +92,8 @@ elements_to_json_internal([], CurrentResult, FinalResult) :-
 % Deals with a list with just 1 element as input.
 elements_to_json_internal([H], CurrentResult, FinalResult) :-
   element_to_json(H, ElemHeadJson),
-  %append([], CurrentResult, TmpList),
   TmpList = CurrentResult,
   (var(CurrentResult) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
-  write('test base case list 1 element: X='), write(X), nl,
   elements_to_json_internal([], X, FinalResult).
 
 %% elements_to_json_internal(+ListWithAtomPairListElements, +CurrentResult, ?FinalResult)
@@ -106,7 +103,6 @@ elements_to_json_internal([H], CurrentResult, FinalResult) :-
 % [json(market=ebr,code=tess),json(market=ams,code=sbm)]
 elements_to_json_internal([H|T], CurrentResult, FinalResult) :-
   element_to_json(H, ElemHeadJson),
-  %append([], CurrentResult, TmpList),
   TmpList = CurrentResult,
   (var(CurrentResult) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
   elements_to_json_internal(T, X, FinalResult).
@@ -120,13 +116,9 @@ elements_to_json(ListWithAtomPairListElements, FinalResult) :-
 main :-
   import_facts,
   setof([Y, X], (has_potential(X, Y)), X0),
-  write('test X0: '), write(X0), nl,
-  elements_to_json(X0, Choco),
-  % TODO: make a base case work, I do not think it properly exits test.
-  write('test: after test call'), nl,
-  write('test Choco: '), write(Choco), nl,
-  %json_write(current_output, Choco),
+  elements_to_json(X0, JsonifiedList),
+  %json_write(current_output, JsonifiedList),
   %open('result.txt', write, Stream),
-  %json_write(Stream, Choco),
+  %json_write(Stream, JsonifiedList),
   %close(Stream),
   write('Done.'), nl.
