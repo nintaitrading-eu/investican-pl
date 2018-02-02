@@ -117,8 +117,7 @@ main :-
   import_facts,
   setof([Y, X], (has_potential(X, Y)), X0),
   elements_to_json(X0, JsonifiedList),
-  %json_write(current_output, JsonifiedList),
-  %open('result.txt', write, Stream),
-  %json_write(Stream, JsonifiedList),
-  %close(Stream),
+  open('result.txt', write, Stream),
+  json_write(Stream, JsonifiedList),
+  close(Stream),
   write('Done.'), nl.
