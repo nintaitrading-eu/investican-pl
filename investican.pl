@@ -22,7 +22,9 @@
 :- use_module(library(csv)).
 :- use_module(library(http/json)).
 :- use_module(library(http/json_convert)).
+:- use_module(library(odbc)).
 
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Init
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -111,6 +113,16 @@ elements_to_json(ListWithAtomPairListElements, FinalResult) :-
   X = [], 
   elements_to_json_internal(ListWithAtomPairListElements, X, FinalResult).
 
+postgres_connect(C):-
+  odbc_connect('finance', C, [user(rockwolf), alias('se-db0-tst'), open(once)]).
+
+postgres_disconnect(C) :-
+  odbc_disconnect(C).
+
+postgres_test :-
+    odbc_query(finance, 'SELECT * FROM t_account', Result),
+    write('DEBUG: '), write(Result), nl.
+
 %% main
 % Main predicate of the application.
 main :-
@@ -120,4 +132,7 @@ main :-
   open('result.txt', write, Stream),
   json_write(Stream, JsonifiedList),
   close(Stream),
+  postgres_connect(C),
+  postgres_test,
+  postgres_disconnect(C),
   write('Done.'), nl.
