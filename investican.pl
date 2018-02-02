@@ -81,46 +81,44 @@ element_to_json(ListElement, Result) :-
   nth0(1, ListElement, ElemCode),
   prolog_to_json(json([market=ElemMarket, code=ElemCode]), Result).
 
-%% elements_to_json(+Empty_List, ?NewList)
+%% elements_to_json_internal(+Empty_List, _, _)
 % Base case for converting elements of a list, to json-objects.
 % Deals with an empty list as input.
-elements_to_json([], NewList) :-
-  write('test base case emptly list: '), write(NewList), nl.
+elements_to_json_internal([], CurrentResult, FinalResult) :-
+  write('DEBUG: '), write(CurrentResult), nl,
+  FinalResult = CurrentResult.
 
-%% elements_to_json(+ListWith1Element, ?NewList)
+%% elements_to_json_internal(+ListWith1Element, +CurrentResult, ?FinalResult)
 % Base case for converting elements of a list, to json-objects.
 % Deals with a list with just 1 element as input.
-elements_to_json([H], NewList) :-
-  write('test base case list 1 element.'), nl,
+elements_to_json_internal([H], CurrentResult, FinalResult) :-
   element_to_json(H, ElemHeadJson),
-  append([], NewList, TmpList),
-  (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
-  elements_to_json([], X).
+  %append([], CurrentResult, TmpList),
+  TmpList = CurrentResult,
+  (var(CurrentResult) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
+  write('test base case list 1 element: X='), write(X), nl,
+  elements_to_json_internal([], X, FinalResult).
 
-%% elements_to_json(+ListWithAtomPairListElements, ?NewList)
+%% elements_to_json_internal(+ListWithAtomPairListElements, +CurrentResult, ?FinalResult)
 % Converts the elements of a list of atom-pair lists, to json-objects.
 % E.g.: [[tess, ebr],[sbm, ams]]
-% will result in NewList being
+% will result in CurrentResult being
 % [json(market=ebr,code=tess),json(market=ams,code=sbm)]
-elements_to_json([H|T], NewList) :-
+elements_to_json_internal([H|T], CurrentResult, FinalResult) :-
   element_to_json(H, ElemHeadJson),
-  append([], NewList, TmpList),
-  (var(NewList) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
-  elements_to_json([T], X).
+  %append([], CurrentResult, TmpList),
+  TmpList = CurrentResult,
+  (var(CurrentResult) -> append([ElemHeadJson], [], X); append([ElemHeadJson], TmpList, X)),
+  elements_to_json_internal(T, X, FinalResult).
 
-test_assignment([A], [B], X) :-
-  test_assignment([B], X).
-
-test_assignment([B], X) :-
-  append(B, [], X),
-  write(X), nl.
+elements_to_json(ListWithAtomPairListElements, FinalResult) :-
+  X = [], 
+  elements_to_json_internal(ListWithAtomPairListElements, X, FinalResult).
 
 %% main
 % Main predicate of the application.
 main :-
   import_facts,
-  test_assignment([[kak]], [[bee]], R0),
-  write('test* R0: '), write(R0), nl,
   setof([Y, X], (has_potential(X, Y)), X0),
   write('test X0: '), write(X0), nl,
   elements_to_json(X0, Choco),
